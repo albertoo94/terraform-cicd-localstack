@@ -24,11 +24,6 @@ provider "aws" {
   }
 }
 
-resource "aws_s3_bucket" "bucket_practica_2" {
-  bucket = "bucket-terraform-localstack-tarea2"
-
-  tags = {
-    Nombre = "BucketTarea3"
-    Entorno = "Practica"
-  }
+resource "aws_s3_bucket" "bucket_cicd" {
+  bucket = "bucket-cicd-localstack-asir"
 }
