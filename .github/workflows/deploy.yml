@@ -33,7 +33,7 @@ jobs:
       - name: Esperar a que LocalStack esté listo
         run: |
           for i in {1..30}; do
-            if curl -s http://localhost:4566/_localstack/health | grep -q '"initialized": true'; then
+            if docker logs localstack-main 2>&1 | grep -q "Ready."; then
               echo "LocalStack listo"
               exit 0
             fi
