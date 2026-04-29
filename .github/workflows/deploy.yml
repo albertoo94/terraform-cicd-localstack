@@ -27,7 +27,8 @@ jobs:
         run: |
           docker run -d --name localstack-main \
             -p 4566:4566 \
-            -p 4510-4559:4510-4559 \
+            -e SERVICES=s3 \
+            -e DEBUG=1 \
             localstack/localstack:3.0
 
       - name: Esperar a que LocalStack esté listo
@@ -43,6 +44,11 @@ jobs:
           docker logs localstack-main
           exit 1
 
+      - name: Comprobar LocalStack antes de Terraform
+        run: |
+          docker ps
+          curl -s http://127.0.0.1:4566/_localstack/health
+
       - name: Terraform init
         run: terraform init -input=false
 
@@ -50,13 +56,13 @@ jobs:
         run: terraform plan -input=false -no-color
 
       - name: Terraform apply
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -input=false -no-color
 
       - name: Instalar AWS CLI
-        run: sudo apt-get update && sudo apt-get install -y awscli
+        run: pip install awscli
 
       - name: Verificar despliegue
-        run: aws --endpoint-url=http://localhost:4566 s3 ls
+        run: aws --endpoint-url=http://127.0.0.1:4566 s3 ls
 
       - name: Mostrar logs de LocalStack si falla
         if: failure()
